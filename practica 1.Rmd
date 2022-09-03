@@ -1,0 +1,126 @@
+---
+title: "Práctica 1"
+author: "Diego Gutiérrez Gonz"
+output:
+  html_document:
+    df_print: paged
+---
+
+
+1.- Create one vector, containing the sequence of numbers from -10 to 27. Print on the screen the seventh element.
+
+```{r}
+
+x1 <- c(seq(-10, 27, by=1))
+print(x1)
+cat("\nSeventh element in the sequence ", x[7])
+
+```
+
+2.- Create one vector, containing the sequence of numbers from 0 to 40. Then, create the vector {3(5^n) −1 | n=0,..40 }.
+
+```{r}
+
+x2 <- seq(0, 40, by=1)
+x2
+cat("\n")
+x2_transformed <- 3*(5**x2)-1
+x2_transformed
+
+```
+3.- Consider the vector in the previous exercise.
+You are given:
+
+    h - the highest volume allowed for any song
+
+    i - the initial volume before the first song
+
+    A - a list of allowed volume changes for the following songs
+    
+    singer(h, i, A)
+
+- The singer can either increase/decrease the volume of sound system for the next song by the allowed volume change A[j] for jth song from the volume of the j-1th song. 
+
+- The singer's objective is to maximize the volume of the last song
+
+- The volume cannot be a negative number
+Objective: write a function that finds the maximum volume that can be attained, or return -1 if there is no possibility of changing volume due to the given constrains. 
+
+- Examples:
+
+singer(10, 1, [4,4,4,4]) 
+    1st song: can go up 4 from 1 -> volume 5; can't go down 4 from 1 (1-4 < 0)
+    2nd song: can go up 4 from 5 -> volume 9; can go down 4 from 5 -> volume 1
+    3rd song: volume 9 can't go up but can go down -> volume 5; volume 1 can't go down but can      go up -> volume 5
+    4th song: volume 5 can go up -> 9; volume 5 can go down -> 1
+    Return 9
+    
+singer(4, 1, [4,4,4]) 
+    1st song: can't go up 4 from 1 (1+4>4); can't go down 4 from 1 (1-4 < 0)
+    Return -1, can't change volume
+    
+singer(3, 1, [1,2,3]) 
+    1st song: can go up 1 from 1 -> volume 2; can go down 1 from 1 -> volume 0
+    2nd song: can´t go up 2 from 2 -> volume 2 (2+2 > 3); can go down 2 from 2 -> volume 0;
+    3rd song: can go up 3 from 0; can´t go down 3 from 0 (0-3 < 0)
+    Return 3
+    
+```{r}
+
+checkVolume <- function(value, index, operations, max, A){
+  result <- 0
+  
+  if(index <= length(A)){
+    
+    if(value + A[index] <= max){
+      result <- value + A[index]
+      operations <- c(operations, result)
+      #print(operations)
+      checkVolume(result, index + 1, operations, max, A)
+      
+    }else{
+      
+      result <- value - A[index]
+      
+      if(result >= 0){
+        operations <- c(operations, result)
+        #print(operations)
+        checkVolume(result, index + 1, operations, max, A)
+        
+      }else if(result < 0){
+        #Not able to Maximize the volume
+        operations <- c(operations, result, -1)
+        #print(operations)
+        return(operations)
+      }
+    }
+  }else{
+    return(operations) #return the last item of the vector
+  }
+}
+
+singer <- function(h, i, A){
+  max <- h
+  start <- i
+  operations <- c(start)
+  
+  operations <- checkVolume(start, 1, operations, max, A)
+  #show the procedure and result
+  result <- operations[length(operations)]
+  
+  if(result >= 0){
+    print(operations)
+    cat("The maximum volume for the last song is ", operations[length(operations)])  
+  }else{
+    print(operations)
+    print("There is no possibility of changing volume due to the given constrains")
+  }
+  
+}
+
+
+singer(10, 1, c(4,4,4,4))
+singer(4, 1, c(4,4,4)) 
+
+```
+
